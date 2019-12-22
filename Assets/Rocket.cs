@@ -25,8 +25,19 @@ public class Rocket : MonoBehaviour
 
         HandleThrust();
         HandleRotate();
+        CleanYRotation();
 
         rigidBody.freezeRotation = false;
+    }
+
+    private void CleanYRotation()
+    {
+        Quaternion currentQuat = transform.rotation;
+        
+        //print(currentQuat);
+        currentQuat.y = 0f;
+        transform.rotation = currentQuat;
+        //transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);   
     }
 
     private void HandleRotate()

@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LandingPad
       objectReference: {fileID: 0}
+    - target: {fileID: 866659237862023240, guid: f6f2e09e4e2bbd3479d0ddf44e070038,
+        type: 3}
+      propertyPath: m_TagString
+      value: Friendly
+      objectReference: {fileID: 0}
     - target: {fileID: 866659237862023242, guid: f6f2e09e4e2bbd3479d0ddf44e070038,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

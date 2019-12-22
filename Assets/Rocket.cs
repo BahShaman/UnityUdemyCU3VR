@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -106,7 +104,12 @@ public class Rocket : MonoBehaviour
             case "Fuel":
                 print("Refueled");
                 break;
+            case "Finish":
+                SceneManager.LoadScene(1);                
+                print("Finish");
+                break;
             default:
+                SceneManager.LoadScene(0);
                 HandleExplode();
                 break;
         }

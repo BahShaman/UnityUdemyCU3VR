@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
+    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float mainThrust = 100f;
+
     Rigidbody rigidBody;
     AudioSource audioSource;
     
@@ -28,21 +31,23 @@ public class Rocket : MonoBehaviour
 
     private void HandleRotate()
     {
-        HandleLeftRotation(); //not used, and held by rigidbody constraints
         HandleForwardRotation();
+        HandleLeftRotation(); //not used, and held by rigidbody constraints
     }
 
     private void HandleForwardRotation()
     {
+
+        float rotationThisFrame = Time.deltaTime * rcsThrust;
         if (Input.GetKey(KeyCode.A))
         {
             //print("Rotate right");
-            transform.Rotate(Vector3.forward);
+            transform.Rotate(Vector3.forward * rotationThisFrame);
 
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(-Vector3.forward);
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
             //print("Rotate left");
         }
     }
@@ -66,8 +71,9 @@ public class Rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space)) //can thrust while rotating
         {
-            //print("Trusting");
-            rigidBody.AddRelativeForce(Vector3.up);
+            float thrustThisFrame = Time.deltaTime * mainThrust;
+            //print("Thrusting");
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();

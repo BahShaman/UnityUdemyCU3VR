@@ -153,14 +153,14 @@ public class Rocket : MonoBehaviour
         {
             //print("Rotate forward");
             rigidBody.freezeRotation = true;
-            transform.Rotate(Vector3.left * rotationThisFrame);
+            transform.Rotate(-Vector3.left * rotationThisFrame);
             rigidBody.freezeRotation = false;
 
         }
         else if (Input.GetKey(KeyCode.S))
         {
             rigidBody.freezeRotation = true;
-            transform.Rotate(-Vector3.left * rotationThisFrame);
+            transform.Rotate(Vector3.left * rotationThisFrame);
             rigidBody.freezeRotation = false;
             //print("Rotate back");
         }

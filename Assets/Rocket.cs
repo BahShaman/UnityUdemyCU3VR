@@ -9,6 +9,10 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidBody;
     AudioSource audioSource;
     
+    enum  State { Alive, Dying, Transcending};
+    State state = State.Alive;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,19 +23,18 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rigidBody.freezeRotation = true;
-
-        HandleThrust();
-        HandleRotate();
-        CleanYRotation();
-
-        rigidBody.freezeRotation = false;
+        if(state == State.Alive)
+        {
+            HandleThrust();
+            HandleRotate();
+            CleanYRotation();
+        }
     }
 
     private void CleanYRotation()
     {
         Quaternion currentQuat = transform.rotation;
-        
+            
         //print(currentQuat);
         currentQuat.y = 0f;
         transform.rotation = currentQuat;
@@ -51,12 +54,16 @@ public class Rocket : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             //print("Rotate right");
+            rigidBody.freezeRotation = true;
             transform.Rotate(Vector3.forward * rotationThisFrame);
+            rigidBody.freezeRotation = false;
 
         }
         else if (Input.GetKey(KeyCode.D))
         {
+            rigidBody.freezeRotation = true;
             transform.Rotate(-Vector3.forward * rotationThisFrame);
+            rigidBody.freezeRotation = false;
             //print("Rotate left");
         }
     }
@@ -66,12 +73,16 @@ public class Rocket : MonoBehaviour
         if (Input.GetKey(KeyCode.W))
         {
             //print("Rotate forward");
+            rigidBody.freezeRotation = true;
             transform.Rotate(Vector3.left);
+            rigidBody.freezeRotation = false;
 
         }
         else if (Input.GetKey(KeyCode.S))
         {
+            rigidBody.freezeRotation = true;
             transform.Rotate(-Vector3.left);
+            rigidBody.freezeRotation = false;
             //print("Rotate back");
         }
     }
@@ -94,8 +105,23 @@ public class Rocket : MonoBehaviour
         }
     }
 
+    private void LoadNextScene()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
+        if(state != State.Alive)
+        {
+            return;
+        }
+
         switch (collision.gameObject.tag)
         {
             case "Friendly":
@@ -105,12 +131,14 @@ public class Rocket : MonoBehaviour
                 print("Refueled");
                 break;
             case "Finish":
-                SceneManager.LoadScene(1);                
                 print("Finish");
+                state = State.Transcending;
+                Invoke("LoadNextScene", 1f);
                 break;
             default:
-                SceneManager.LoadScene(0);
+                state = State.Dying;
                 HandleExplode();
+                Invoke("LoadFirstLevel", 1f);
                 break;
         }
     }

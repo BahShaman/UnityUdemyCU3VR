@@ -1,10 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
+
+    int currentLevel = 0;
 
     Rigidbody rigidBody;
     AudioSource audioSource;
@@ -25,9 +28,18 @@ public class Rocket : MonoBehaviour
     {
         if(state == State.Alive)
         {
+            HandleReset();
             HandleThrust();
             HandleRotate();
             CleanYRotation();
+        }
+    }
+
+    private void HandleReset()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            LoadFirstLevel();
         }
     }
 
@@ -43,8 +55,54 @@ public class Rocket : MonoBehaviour
 
     private void HandleRotate()
     {
+        HandleLevelInput();
+        //HandleAllAxisRotation();
+        HandleAxisRotation();
+        HandleAxisRotationLeft();
         HandleForwardRotation();
         HandleLeftRotation(); //not used, and held by rigidbody constraints
+    }
+
+    private void HandleLevelInput()
+    {
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            SceneManager.LoadScene(0);
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            SceneManager.LoadScene(1);
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            SceneManager.LoadScene(2);
+        }
+    }
+
+    private void HandleAllAxisRotation()
+    {
+        rigidBody.freezeRotation = true;
+        transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.GameController);
+        rigidBody.freezeRotation = false;
+    }
+
+
+    private void HandleAxisRotation()
+    {
+        float rotation = Input.GetAxis("Horizontal");
+        float rotationThisFrame = Time.deltaTime * rotation;
+        rigidBody.freezeRotation = true;
+        transform.Rotate(Vector3.forward * rotationThisFrame);
+        rigidBody.freezeRotation = false;
+    }
+
+    private void HandleAxisRotationLeft()
+    {
+        float rotation = Input.GetAxis("Horizontal");
+        float rotationThisFrame = Time.deltaTime * rotation;
+        rigidBody.freezeRotation = true;
+        transform.Rotate(Vector3.left * rotationThisFrame);
+        rigidBody.freezeRotation = false;
     }
 
     private void HandleForwardRotation()
@@ -70,18 +128,19 @@ public class Rocket : MonoBehaviour
 
     private void HandleLeftRotation()
     {
+        float rotationThisFrame = Time.deltaTime * rcsThrust;
         if (Input.GetKey(KeyCode.W))
         {
             //print("Rotate forward");
             rigidBody.freezeRotation = true;
-            transform.Rotate(Vector3.left);
+            transform.Rotate(Vector3.left * rotationThisFrame);
             rigidBody.freezeRotation = false;
 
         }
         else if (Input.GetKey(KeyCode.S))
         {
             rigidBody.freezeRotation = true;
-            transform.Rotate(-Vector3.left);
+            transform.Rotate(-Vector3.left * rotationThisFrame);
             rigidBody.freezeRotation = false;
             //print("Rotate back");
         }
@@ -89,7 +148,7 @@ public class Rocket : MonoBehaviour
 
     private void HandleThrust()
     {
-        if (Input.GetKey(KeyCode.Space)) //can thrust while rotating
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button15)) //can thrust while rotating
         {
             float thrustThisFrame = Time.deltaTime * mainThrust;
             //print("Thrusting");
@@ -107,7 +166,15 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        if (currentLevel == 1)
+        {
+            currentLevel = 2;
+        }
+        else
+        {
+            currentLevel++;
+        }
+        SceneManager.LoadScene(currentLevel);
     }
 
     private void LoadFirstLevel()
@@ -136,9 +203,9 @@ public class Rocket : MonoBehaviour
                 Invoke("LoadNextScene", 1f);
                 break;
             default:
-                state = State.Dying;
-                HandleExplode();
-                Invoke("LoadFirstLevel", 1f);
+                //state = State.Dying;
+                //HandleExplode();
+                //Invoke("LoadFirstLevel", 1f);
                 break;
         }
     }

@@ -1,13 +1,14 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float mainThrust = 100f;
 
-    int currentLevel = 0;
+    static int currentLevel = 0;
 
     Rigidbody rigidBody;
     AudioSource audioSource;
@@ -15,12 +16,19 @@ public class Rocket : MonoBehaviour
     enum  State { Alive, Dying, Transcending};
     State state = State.Alive;
 
+    int sceneCount = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        currentLevel = SceneManager.GetActiveScene().buildIndex;
+
+        sceneCount = SceneManager.sceneCountInBuildSettings;
+        print("current Level:" + currentLevel.ToString());
+        print("scene count :" + sceneCount.ToString());
+
     }
 
     // Update is called once per frame
@@ -39,7 +47,7 @@ public class Rocket : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            LoadFirstLevel();
+            SceneManager.LoadScene(currentLevel);
         }
     }
 
@@ -77,14 +85,26 @@ public class Rocket : MonoBehaviour
         {
             SceneManager.LoadScene(2);
         }
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            SceneManager.LoadScene(3);
+        }
     }
 
-    private void HandleAllAxisRotation()
-    {
-        rigidBody.freezeRotation = true;
-        transform.localRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.GameController);
-        rigidBody.freezeRotation = false;
-    }
+    //private void HandleAllAxisRotation()
+    //{
+    //    float rotation = 0;
+    //    rigidBody.freezeRotation = true;
+    //    InputDevice device = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
+    //    if (device.isValid)
+    //    {
+    //        if (device.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out rotation))
+    //            transform.localRotation = rotation;
+    //    }
+        
+
+    //    rigidBody.freezeRotation = false;
+    //}
 
 
     private void HandleAxisRotation()
@@ -166,13 +186,14 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextScene()
     {
-        if (currentLevel == 1)
+
+        if (currentLevel < sceneCount -1 )
         {
-            currentLevel = 2;
+            currentLevel++;
         }
         else
         {
-            currentLevel++;
+            currentLevel = sceneCount - 1;
         }
         SceneManager.LoadScene(currentLevel);
     }

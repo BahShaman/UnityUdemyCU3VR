@@ -36,10 +36,11 @@ public class Rocket : MonoBehaviour
     {
         if(state == State.Alive)
         {
+            HandleLevelInput();
             HandleReset();
             HandleThrust();
             HandleRotate();
-            CleanYRotation();
+            //CleanYRotation();
         }
     }
 
@@ -63,12 +64,11 @@ public class Rocket : MonoBehaviour
 
     private void HandleRotate()
     {
-        HandleLevelInput();
         //HandleAllAxisRotation();
         HandleAxisRotation();
         HandleAxisRotationLeft();
-        HandleForwardRotation();
-        HandleLeftRotation(); //not used, and held by rigidbody constraints
+        //HandleForwardRotation();
+        //HandleLeftRotation(); //not used, and held by rigidbody constraints
     }
 
     private void HandleLevelInput()
@@ -91,35 +91,36 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    //private void HandleAllAxisRotation()
-    //{
-    //    float rotation = 0;
-    //    rigidBody.freezeRotation = true;
-    //    InputDevice device = InputDevices.GetDeviceAtXRNode(XRNode.CenterEye);
-    //    if (device.isValid)
-    //    {
-    //        if (device.TryGetFeatureValue(CommonUsages.primary2DAxisTouch, out rotation))
-    //            transform.localRotation = rotation;
-    //    }
-        
-
-    //    rigidBody.freezeRotation = false;
-    //}
+    private void HandleAllAxisRotation()
+    {
+        Vector2 rotation;
+        rigidBody.freezeRotation = true;
+        InputDevice device = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        if (device.isValid)
+        {
+            if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out rotation))
+            {
+                transform.TransformVector(rotation);
+            }
+        }
+        rigidBody.freezeRotation = false;
+    }
 
 
     private void HandleAxisRotation()
     {
         float rotation = Input.GetAxis("Horizontal");
-        float rotationThisFrame = Time.deltaTime * rotation;
+        print(rotation);
+        float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
         rigidBody.freezeRotation = true;
-        transform.Rotate(Vector3.forward * rotationThisFrame);
+        transform.Rotate(-Vector3.forward * rotationThisFrame);
         rigidBody.freezeRotation = false;
     }
 
     private void HandleAxisRotationLeft()
     {
-        float rotation = Input.GetAxis("Horizontal");
-        float rotationThisFrame = Time.deltaTime * rotation;
+        float rotation = Input.GetAxis("Vertical");
+        float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
         rigidBody.freezeRotation = true;
         transform.Rotate(Vector3.left * rotationThisFrame);
         rigidBody.freezeRotation = false;

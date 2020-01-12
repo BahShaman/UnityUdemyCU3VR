@@ -46,7 +46,7 @@ public class Rocket : MonoBehaviour
 
     private void HandleReset()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if(Input.GetButton("Cancel"))
         {
             SceneManager.LoadScene(currentLevel);
         }
@@ -88,6 +88,14 @@ public class Rocket : MonoBehaviour
         if (Input.GetKey(KeyCode.Alpha4))
         {
             SceneManager.LoadScene(3);
+        }
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            SceneManager.LoadScene(4);
+        }
+        if (Input.GetKey(KeyCode.Alpha6))
+        {
+            SceneManager.LoadScene(5);
         }
     }
 
@@ -169,7 +177,7 @@ public class Rocket : MonoBehaviour
 
     private void HandleThrust()
     {
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button15)) //can thrust while rotating
+        if (Input.GetButton("Fire1") || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button15)) //can thrust while rotating
         {
             float thrustThisFrame = Time.deltaTime * mainThrust;
             //print("Thrusting");

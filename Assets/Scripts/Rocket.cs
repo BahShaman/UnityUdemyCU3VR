@@ -3,6 +3,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 
+/// <summary>
+/// What I've found is:
+/// Trigger = button 15 (its also an axis but returns only 1 or 0, nothing in-between)
+/// Back = button 7
+/// TouchPad Pressed = button 9
+/// TouchPad Touch Vertical = 5th Axis
+/// TouchPad Touch Horizontal = 4th Axis
+/// </summary>
+
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float rcsThrust = 100f;
@@ -138,21 +147,24 @@ public class Rocket : MonoBehaviour
 
     private void HandleAxisRotation()
     {
-        float rotation = Input.GetAxis("Horizontal");
-        print(rotation);
-        float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
-        rigidBody.freezeRotation = true;
-        transform.Rotate(-Vector3.forward * rotationThisFrame);
-        rigidBody.freezeRotation = false;
+            float rotation = Input.GetAxis("Horizontal");
+            print(rotation);
+            float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
+            rigidBody.freezeRotation = true;
+            transform.Rotate(-Vector3.forward * rotationThisFrame);
+            rigidBody.freezeRotation = false;
     }
 
     private void HandleAxisRotationLeft()
     {
-        float rotation = Input.GetAxis("Vertical");
-        float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
-        rigidBody.freezeRotation = true;
-        transform.Rotate(Vector3.left * rotationThisFrame);
-        rigidBody.freezeRotation = false;
+        if (Input.GetButton("Fire2"))
+        {
+            float rotation = Input.GetAxis("Vertical");
+            float rotationThisFrame = Time.deltaTime * rotation * rcsThrust;
+            rigidBody.freezeRotation = true;
+            transform.Rotate(-Vector3.left * rotationThisFrame);
+            rigidBody.freezeRotation = false;
+        }
     }
 
     private void HandleForwardRotation()
@@ -202,15 +214,11 @@ public class Rocket : MonoBehaviour
         {
             ApplyThrust();
         }
-        else
-        {
-            //audioSource.Stop();
-            MainEngineParticles.Stop();
-        }
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) || Input.GetButtonUp("Fire1"))
         {
             audioSource.Stop();
+            MainEngineParticles.Stop();
         }
     }
 

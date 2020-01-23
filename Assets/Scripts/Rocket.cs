@@ -198,7 +198,7 @@ public class Rocket : MonoBehaviour
 
     private void HandleThrust()
     {
-        if (Input.GetButton("Fire1") || Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button15)) //can thrust while rotating
+        if (Input.GetButton("Fire1") || Input.GetKey(KeyCode.Space)) //can thrust while rotating
         {
             ApplyThrust();
         }
